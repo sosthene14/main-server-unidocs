@@ -1,0 +1,56 @@
+{
+  "builds": [
+    {
+      "src": "*.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "rewrites": [
+    {
+      "source": "/addData",
+      "destination": "/server.js"
+    },
+    {
+      "source": "/userExist",
+      "destination": "/server.js"
+    },
+    {
+      "source": "/updateUserPreference",
+      "destination": "/server.js"
+    },
+    {
+      "source": "/getLikesHistory/:email",
+      "destination": "/server.js"
+    },
+    {
+      "source": "/signWGoogle",
+      "destination": "/server.js"
+    },
+    {
+      "source": "/hasVerified/:email",
+      "destination": "/server.js"
+    },
+    {
+      "source": "/updatePassword",
+      "destination": "/server.js"
+    },
+    {
+      "source": "/checkEmail_quiz/:email",
+      "destination": "/server.js"
+    },
+    {
+      "source": "/setVerification/:email",
+      "destination": "/server.js"
+    },
+    {
+      "source": "/userConfirmPass",
+      "destination": "/server.js"
+    },
+    {
+      "source": "/getVerificationCode",
+      "destination": "/server.js"
+    }
+  ]
+}
