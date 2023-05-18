@@ -41,6 +41,10 @@
       "destination": "/server.js"
     },
     {
+      "source": "/checkEmail/:email",
+      "destination": "/server.js"
+    },
+    {
       "source": "/setVerification/:email",
       "destination": "/server.js"
     },
