@@ -79,7 +79,7 @@ app.post("/userExist", async (req, res) => {
   const motDePasse = req.body.motDePasse;
 
   if (!email || !motDePasse) {
-    res.status(400).send({ message: "Email et/ou mot de passe manquant(s)" });
+    res.status(201).send({ message: "Email et/ou mot de passe manquant(s)" });
   } else {
     const user = await User.findOne({ email: email });
     if (user && bcrypt.compareSync(motDePasse, user.motDePasse)) {
@@ -135,7 +135,6 @@ app.post("/updatePassword", async (req, res) => {
           }
         })
         .catch((err) => {
-          console.error(err);
           res.status(500).send({ message: "Erreur serveur" });
         });
     }
@@ -229,14 +228,18 @@ app.post("/userConfirmPass", async (req, res) => {
     const user = await User.findOne({ email: email });
     if (!user) {
       res.status(400).send();
+      console.log("erreur");
     } else {
+      sendEmail(emailEncrypted, email).catch((err) => {
+      });
       res.status(200).send(emailEncrypted);
-      main2(emailEncrypted, email).catch((err) => console.log(err));
     }
   } catch (error) {
     res.send({ status: "erreur" });
   }
 });
+
+
 
 function generateRandomCode(length) {
   let result = "";
@@ -256,30 +259,35 @@ async function startServer() {
 }
 
 startServer();
-const nodemailer = require("nodemailer");
-async function main2(emailEncrypted, mailTo) {
-  let transporter = nodemailer.createTransport({
-    service: "gmail", // Usually true if connecting to port 465
-    auth: {
-      user: "sosthenemounsambote14@gmail.com",
-      pass: "rpmeuinjedndobhx",
-    }, // Password (for gmail, your app password)
-    // ⚠️ For better security, use environment variables set on the server for these values when deploying
-  });
-  randomCode = generateRandomCode(6);
-  let info = await transporter.sendMail({
-    from: "sosthenemounsambote14@gmail.com",
-    to: mailTo,
-    subject: "Veuillez vérifier votre email",
-    html: `<p>Veuillre confirmer votre adresse mail afin de vous connecter à votre compte code :<span style="color: black; font-weight:bold;">${randomCode}</span><br/>`,
-  });
-  console.log(info.messageId);
-  // Random ID generated after successful send (optional)
-}
+const nodemailer = require("nodemailer"); 
+async function sendEmail(emailEncrypted, mailTo) {
+  try {
+    let transporter = nodemailer.createTransport({
+      service: process.env.SERVICE,
+      auth: {
+        user: process.env.USER,
+        pass: process.env.PASS,
+      },
+    });
+    randomCode = generateRandomCode(6);
+    const mailOptions = {
+      from: "sosthenemounsambote14@gmail.com",
+      to: mailTo,
+      subject: "Confirmation mail",
+      html: `<p>Veuillez confirmer votre adresse mail afin de vous connecter à votre compte code :<span style="color: black; font-weight:bold;">${randomCode}</span><br/>`,
+    };
 
+    let info = await transporter.sendMail(mailOptions);
+    console.log("Email sent:", info.messageId);
+  } catch (error) {
+    console.error("Error sending email:", error);
+  }
+}
+  
 app.get("/getVerificationCode", async (req, res) => {
   try {
     res.send({ randomCode });
+    
   } catch (error) {
     res.send({ status: "erreur" });
   }
